@@ -1,0 +1,43 @@
+#+PROPERTY: header-args:R  :session *R*
+
+#+BEGIN_SRC R
+library(tidyverse)
+library(data.table)
+flights <- as.data.table(nycflights13::flights)
+#+END_SRC
+
+#+RESULTS:
+
+* 7.5.1.1
+** 1.
+ #+BEGIN_SRC R :results output silent
+ d.flights <- flights[,
+   {cancelled = is.na(dep_time)
+   h = sched_dep_time %/% 100
+   m = sched_dep_time %% 100
+   t = h + m/60
+   list(time=t, cancelled=cancelled)
+   }]
+ #+END_SRC
+
+ #+BEGIN_SRC R :results output graphics :file ch07/1.png
+ g = ggplot(d.flights, aes(x=cancelled, y=time))
+ g + geom_boxplot()
+ #+END_SRC
+
+ #+RESULTS:
+ [[file:ch07/1.png]]
+** 2.
+
+ #+BEGIN_SRC R :results output graphics :file ch07/c.png :width 1000
+ require(cowplot)
+ g = ggplot(diamonds, aes(x=cut, y=price))
+ p1 = g + geom_boxplot() + coord_flip()
+ p2 = g + geom_violin() + coord_flip()
+ p3 = ggplot(diamonds) + geom_histogram(aes(x=price)) + facet_wrap(~ cut)
+ p4 = ggplot(diamonds) + geom_freqpoly(aes(x=price, colour=cut))
+ plot_grid(p1, p2, p3, p4, align='vh', hjust=-1.5)
+ #+END_SRC
+
+ #+RESULTS:
+ [[file:ch07/c.png]]
